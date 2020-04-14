@@ -1,0 +1,2470 @@
+schema {
+  query: Query
+}
+type Query {
+  # System Model for: 'CPS' Facility
+  cpsSystemModel: CPSsystemModel
+}
+type CPSsystemModel {
+  # The project identity.
+  project: Project
+
+  # An attack vector is a path or means by which a hacker can gain access to a
+  # computer or network server in order to deliver a payload or malicious outcome.
+  # Attack vectors enable hackers to exploit system vulnerabilities, including the
+  # human element.
+  attackVector: [AttackVector]
+
+  # A component is an abstract term that represents the physical or logical entity
+  # that performs a specific function or functions.
+  component: [Component]
+
+  # The set of process model variables and values.
+  context: [Context]
+
+  # A controller may provide control actions to control some process and to enforce
+  # constraints on the behavior of the controlled process.
+  controlAction: [ControlAction]
+
+  # A document identifies either the source/authorization for information entered
+  # into the system description database, a specification/document generated from
+  # the contents of the database, or an applicable or reference document for a
+  # specification/document generated from the contents of the database.
+  document: [Document]
+
+  # A domain set defines the number of iterations or replications in a control
+  # structure.
+  domainSet: [DomainSet]
+
+  # An exit identifies a possible path to follow when a processing unit completes.
+  exit: [Exit]
+
+  # Process models may be updated in part by feedback used to observe the controlled
+  # process.
+  feedback: [Feedback]
+
+  # A Function is a transformation that accepts one or more inputs (items) and
+  # transforms them into outputs (items).
+  function: [Function]
+
+  # A hazard is a system state or set of conditions that, together with a particular
+  # set of worst-case environmental conditions, will lead to a loss
+  hazard: [Hazard]
+
+  # An interface describes the logical connections between parts of an architecture.
+  interface: [Interface]
+
+  # Items represent flows within and between functions. An item is an input to or an
+  # output from a function.
+  item: [Item]
+
+  # A link is the physical implementation of an interface.
+  link: [Link]
+
+  # A loss involves something of value to stakeholders. Losses may include a loss of
+  # human life or human injury, property damage, environmental pollution, loss of
+  # mission, loss of reputation, loss or leak of sensitive information, or any other
+  # loss that is unacceptable to the stakeholders.
+  loss: [Loss]
+
+  # A loss scenario describes the causal factors that can lead to the unsafe control
+  # and to hazards.    Two types of loss scenarios must be considered:  a) Why would
+  # Unsafe Control Actions occur?  b) Why would control actions be improperly
+  # executed or not executed, leading to hazards?
+  lossScenario: [LossScenario]
+
+  # A Requirement is either an originating requirement extracted from source
+  # documentation for a system, a refinement of a higher-level requirement, a
+  # derived characteristic of the system or one of its subcomponents, or a design
+  # decision.
+  requirement: [Requirement]
+
+  # A resilient mode of the system that remediates one or more loss scenarios.
+  resilientMode: [ResilientMode]
+
+  # A Resource is something (e.g., power, MIPS, interceptors, etc.) that the system
+  # uses, captures, or generates while it is operating.
+  resource: [Resource]
+
+  # An Unsafe Control Action (UCA) is a control action that, in a particular context
+  # and worst-case environment, will lead to a hazard.
+  unsafeAction: [UnsafeAction]
+
+  # recursive call structure (select, parallel, loop, etc.) for each function
+  callStructure: [CallStructure]
+}
+type Project {
+  id: ID!
+  name: String!
+  description: String
+  version: String
+}
+type Parameter {
+  name: String!
+  description: String
+  objective: String
+  threshold: String
+  design: String
+  observed: String
+  units: String
+}
+#########################################
+# AttackVector definition
+#########################################
+type AttackVector {
+  identity: AttackVectorID!
+  attributes: AttackVectorATTR
+  parameters: [Parameter]
+  relations: AttackVectorREL
+}
+type AttackVectorID {
+  id: ID!
+  name: String!
+  number: String!
+}
+type AttackVectorATTR {
+  # The likelihood of the attack.
+  likelihood: AttackVectorLikelihood
+
+  # Is the attack vector to be considered for the system?
+  outOfScope: Boolean
+
+  # A justification for not including the attack vector within the system scope.
+  outOfScopeJustification: String
+
+  # Typical severity of this type of attack.
+  severity: AttackVectorSeverity
+
+  # The domain of attack.  The attack domain aligns to the Component Type / Link: 
+  # Software -> SW Subsystem  Hardware -> HW Subsystem  Communication -> Link 
+  # Supply Chain -> HW & SW Subsystem  Social Engineering -> Human  Physical
+  # Security -> Environment
+  domainOfAttack: AttackVectorDomainOfAttack
+
+  # Description is the written statement of this entity.
+  description: String
+
+}
+enum AttackVectorLikelihood {
+  nil
+  High
+  Medium
+  Low
+}
+enum AttackVectorSeverity {
+  nil
+  Very_High
+  High
+  Medium
+  Low
+  Very_Low
+}
+enum AttackVectorDomainOfAttack {
+  nil
+  Software
+  Hardware
+  Communications
+  Supply_Chain
+  Social_Engineering
+  Physical_Security
+}
+type AttackVectorREL {
+  # Documented by identifies the source document which specifies and/or enhances the
+  # definition of this entity.
+  documentedBy: [AttackVector_DocumentedByTarget]
+
+  # The attack vector which causes the loss scenario.
+  precipitates: [AttackVector_PrecipitatesTarget]
+
+  # Identifies Entities that can be violated by an Attack.
+  violates: [AttackVector_ViolatesTarget]
+
+}
+type AttackVector_DocumentedByTarget {
+  documentTarget: DocumentID
+}
+type AttackVector_PrecipitatesTarget {
+  lossScenarioTarget: LossScenarioID
+}
+type AttackVector_ViolatesTarget {
+  componentTarget: ComponentID
+  linkTarget: LinkID
+  # A description of selected mitigation.
+  justification: String
+
+  # Component / Link specific attack vector description.
+  description: String
+
+  # The attack vector system mitigation for the associated Component / Link.
+  mitigationType: AttackVector_ViolatesMitigationType
+
+}
+enum AttackVector_ViolatesMitigationType {
+  nil
+  Defensive
+  DiverseRedundancy
+  Harden
+  N_A
+}
+#########################################
+# Component definition
+#########################################
+type Component {
+  identity: ComponentID!
+  attributes: ComponentATTR
+  parameters: [Parameter]
+  relations: ComponentREL
+}
+type ComponentID {
+  id: ID!
+  name: String!
+  number: String!
+}
+type ComponentATTR {
+  # Type identifies the component's role in the component hierarchy.
+  type: ComponentType
+
+  # Contract Line Item Number is a reference to the contract's identification for
+  # the specific items and services requiring separate pricing.
+  clin: String
+
+  # Is the Component out of scope for the system Attack Analysis?
+  outOfScopeAttackAnalysis: Boolean
+
+  # A justification for excluding the Component from the Attack Analysis.
+  outofScopeJustification: String
+
+  # Mission is the text description of the business purpose of a system.
+  mission: String
+
+  # Operations describe synchronous interactions where the requestor waits for the
+  # request to be handled. This attribute identifies a subset of the allocated
+  # behavior that is critical to highlight on SysML representations.
+  operations: [String]
+
+  # Doc. PUID is the project unique identifier that is often used in system
+  # development specifications and documents to identify the same entity in multiple
+  # documents. This is not to be confused with the database entity unique
+  # identifier.
+  puid: String
+
+  # Purpose is a brief statement of the reason for the existence of the entity.
+  purpose: String
+
+  # Cost is the expense associated with an entity.
+  cost: Float
+
+  # Receptions describe asynchronous interactions where the requestor can continue
+  # without waiting for a reply. This attribute identifies a subset of the allocated
+  # behavior that is critical to highlight on SysML representations.
+  receptions: [String]
+
+  # Abbreviation identifies a unique shortened name for the entity.
+  abbreviation: String
+
+  # Title is the label to be used in formal documentation instead of the entity
+  # name.
+  title: String
+
+  # Description is the written statement of this entity.
+  description: String
+
+}
+enum ComponentType {
+  nil
+  Assembly
+  Context
+  CSC
+  CSCI
+  CSU
+  Element
+  Environment
+  External_System
+  Facility
+  Family_of_Systems
+  Human
+  HW_Element
+  HWCI
+  Network
+  Part
+  Segment
+  Sentinel
+  Service
+  Software_Item
+  Subassembly
+  Subsystem
+  SW_Element
+  SWCI
+  System
+  System_Architecture
+  System_of_Systems
+  Test_Equipment
+  Test_Software
+  Threat_Simulator
+}
+type ComponentREL {
+  # Built from identifies the entities (children) that make up this entity (the
+  # parent).
+  builtFrom: [Component_BuiltFromTarget]
+
+  # Built in identifies the parent entity for which this entity is a part.
+  builtIn: [Component_BuiltInTarget]
+
+  # Connected to identifies the connection that serves to link this unit to another
+  # entity.
+  connectedTo: [Component_ConnectedToTarget]
+
+  # Documented by identifies the source document which specifies and/or enhances the
+  # definition of this entity.
+  documentedBy: [Component_DocumentedByTarget]
+
+  # The Function / Link / Item enables detection of Loss Scenario.
+  enablesDetectionOf: [Component_EnablesDetectionOfTarget]
+
+  # Generalization of associates a specific object classification with a more
+  # general object classification. For example, "Vehicle" is a generalization of
+  # "Car," "Train," and "Plane."
+  generalizationOf: [Component_GeneralizationOfTarget]
+
+  # Identifies Attack Patterns that may violate an Entity.
+  isViolatedBy: [Component_IsViolatedByTarget]
+
+  # Joined to identifies the logical units through which this physical unit
+  # interfaces with another.
+  joinedTo: [Component_JoinedToTarget]
+
+  # Kind of indicates classification. This relationship is often referred to as the
+  # "is a" relationship (i.e., a car "is a" vehicle).
+  kindOf: [Component_KindOfTarget]
+
+  # Performs identifies the actions that this entity accomplishes.
+  performs: [Component_PerformsTarget]
+
+  # A Sentinel protects against one or more Loss Scenarios.
+  protectsAgainst: [Component_ProtectsAgainstTarget]
+
+  # Reported by identifies the documentation entity of which the entity is the
+  # primary subject.
+  reportedBy: [Component_ReportedByTarget]
+
+  # A Threat Simulator simulates one or more Loss Scenarios.
+  simulates: [Component_SimulatesTarget]
+
+  # Specified by identifies constraint and/or performance requirements that this
+  # entity must satisfy.
+  specifiedBy: [Component_SpecifiedByTarget]
+
+}
+type Component_BuiltFromTarget {
+  componentTarget: ComponentID
+  # Whole Multiplicity indicates if the component is distinct and separable
+  # (wholeMultiplicity = 0; also termed composition) or whether the component is
+  # distinct and not separable (wholeMultiplicity = 1; also termed aggregation).
+  wholeMultiplicity: Component_BuiltFromWholeMultiplicity
+
+  # PartRole is the name of the role that the part plays in the whole.
+  partRole: String
+
+  # PartMultiplicity is the potential number of instances of the part built in the
+  # whole. This can be specified as zero, a whole number, or a range from a lower
+  # bound to an upper bound.
+  partMultiplicity: String
+
+}
+enum Component_BuiltFromWholeMultiplicity {
+  E_0
+  E_1
+}
+type Component_BuiltInTarget {
+  componentTarget: ComponentID
+  # Whole Multiplicity indicates if the component is distinct and separable
+  # (wholeMultiplicity = 0; also termed composition) or whether the component is
+  # distinct and not separable (wholeMultiplicity = 1; also termed aggregation).
+  wholeMultiplicity: Component_BuiltInWholeMultiplicity
+
+  # PartRole is the name of the role that the part plays in the whole.
+  partRole: String
+
+  # PartMultiplicity is the potential number of instances of the part built in the
+  # whole. This can be specified as zero, a whole number, or a range from a lower
+  # bound to an upper bound.
+  partMultiplicity: String
+
+}
+enum Component_BuiltInWholeMultiplicity {
+  E_0
+  E_1
+}
+type Component_ConnectedToTarget {
+  linkTarget: LinkID
+  # Port ID provides a unique identification for the port that is used between the
+  # Link and the Component.
+  portID: String
+
+}
+type Component_DocumentedByTarget {
+  documentTarget: DocumentID
+}
+type Component_EnablesDetectionOfTarget {
+  lossScenarioTarget: LossScenarioID
+  # constraint (=,<,>) for Item, Function, Link, Resource monitored by Sentinel
+  constraint: [String]
+
+}
+type Component_GeneralizationOfTarget {
+  componentTarget: ComponentID
+  # Type classifies the nature of the generalization / specialization relationship.
+  # Inheritance indicates that the specialization shares the properties of the
+  # generalization. Instance indicates that the specialization also shares the
+  # relationships of the generalization.
+  type: Component_GeneralizationOfType
+
+}
+enum Component_GeneralizationOfType {
+  Inheritance
+  Instance
+}
+type Component_IsViolatedByTarget {
+  attackVectorTarget: AttackVectorID
+  # A description of selected mitigation.
+  justification: String
+
+  # Component / Link specific attack vector description.
+  description: String
+
+  # The attack vector system mitigation for the associated Component / Link.
+  mitigationType: Component_IsViolatedByMitigationType
+
+}
+enum Component_IsViolatedByMitigationType {
+  nil
+  Defensive
+  DiverseRedundancy
+  Harden
+  N_A
+}
+type Component_JoinedToTarget {
+  interfaceTarget: InterfaceID
+}
+type Component_KindOfTarget {
+  componentTarget: ComponentID
+  # Type classifies the nature of the generalization / specialization relationship.
+  # Inheritance indicates that the specialization shares the properties of the
+  # generalization. Instance indicates that the specialization also shares the
+  # relationships of the generalization.
+  type: Component_KindOfType
+
+}
+enum Component_KindOfType {
+  Inheritance
+  Instance
+}
+type Component_PerformsTarget {
+  functionTarget: FunctionID
+  # Behavior Type classifies the mapping of the processing unit to the
+  # implementation unit.
+  behaviorType: Component_PerformsBehaviorType
+
+}
+enum Component_PerformsBehaviorType {
+  Atomic
+  Integrated_Root
+  Thread
+}
+type Component_ProtectsAgainstTarget {
+  lossScenarioTarget: LossScenarioID
+}
+type Component_ReportedByTarget {
+  documentTarget: DocumentID
+}
+type Component_SimulatesTarget {
+  lossScenarioTarget: LossScenarioID
+}
+type Component_SpecifiedByTarget {
+  requirementTarget: RequirementID
+  # The Governs relationship attribute identifies the Parameter attribute that is
+  # associated in both the Requirement entity and Component entity joined by the
+  # specified by / specifies relationship.
+  governs: String
+
+}
+#########################################
+# Context definition
+#########################################
+type Context {
+  identity: ContextID!
+  attributes: ContextATTR
+  parameters: [Parameter]
+  relations: ContextREL
+}
+type ContextID {
+  id: ID!
+  name: String!
+  number: String!
+}
+type ContextATTR {
+  # Range identifies the range of values that the entity can assume.
+  range: String
+
+  # Units identifies the units of measurement for the value of the entity.
+  units: String
+
+  # Accuracy identifies how correct the value of the entity must be.
+  accuracy: String
+
+  # Fields identifies the data fields contained within the item.
+  fields: [String]
+
+  # Precision identifies the number of significant digits required for the value of
+  # the entity.
+  precision: String
+
+  # Doc. PUID is the project unique identifier that is often used in system
+  # development specifications and documents to identify the same entity in multiple
+  # documents. This is not to be confused with the database entity unique
+  # identifier.
+  puid: String
+
+  # Size indicates the estimated size (in sizeUnits) of this entity.
+  size: String
+
+  # Size Units indicates the measurement units associated with this entity.
+  sizeUnits: String
+
+  # Priority is used to identify the order of processing of an entity. High priority
+  # entities (larger numbers) are processed before low priority entities (smaller
+  # numbers).
+  priority: String
+
+  # Type is the physical type of this entity.
+  type: ContextType
+
+  # Title is the label to be used in formal documentation instead of the entity
+  # name.
+  title: String
+
+  # Description is the written statement of this entity.
+  description: String
+
+}
+enum ContextType {
+  nil
+  Analog
+  Digital
+  Physical
+  Mixed
+}
+type ContextREL {
+  # Decomposed by identifies the children of this entity.
+  decomposedBy: [Context_DecomposedByTarget]
+
+  # Decomposes identifies the parent of this entity.
+  decomposes: [Context_DecomposesTarget]
+
+  # Documented by identifies the source document which specifies and/or enhances the
+  # definition of this entity.
+  documentedBy: [Context_DocumentedByTarget]
+
+  # The Function / Link / Item enables detection of Loss Scenario.
+  enablesDetectionOf: [Context_EnablesDetectionOfTarget]
+
+  # Input to identifies the processing unit that transforms this entity.
+  inputTo: [Context_InputToTarget]
+
+  # Output from identifies the processing unit that produces this entity.
+  outputFrom: [Context_OutputFromTarget]
+
+  # Context (process model) for unsafe action.
+  providesProcessModelFor: [Context_ProvidesProcessModelForTarget]
+
+  # Specified by identifies constraint and/or performance requirements that this
+  # entity must satisfy.
+  specifiedBy: [Context_SpecifiedByTarget]
+
+  # Transferred by identifies the connection over which this entity is transported.
+  transferredBy: [Context_TransferredByTarget]
+
+  # Triggers identifies the information units that enable a processing unit to begin
+  # execution.  A processing unit begins execution when it has received control
+  # enablement, all of its triggers have arrived, and its necessary resources are
+  # available.
+  triggers: [Context_TriggersTarget]
+
+}
+type Context_DecomposedByTarget {
+  itemTarget: ItemID
+}
+type Context_DecomposesTarget {
+  itemTarget: ItemID
+}
+type Context_DocumentedByTarget {
+  documentTarget: DocumentID
+}
+type Context_EnablesDetectionOfTarget {
+  lossScenarioTarget: LossScenarioID
+  # constraint (=,<,>) for Item, Function, Link, Resource monitored by Sentinel
+  constraint: [String]
+
+}
+type Context_InputToTarget {
+  functionTarget: FunctionID
+}
+type Context_OutputFromTarget {
+  functionTarget: FunctionID
+}
+type Context_ProvidesProcessModelForTarget {
+  unsafeActionTarget: UnsafeActionID
+  # The process model attributes and values that define the "context" for the unsafe
+  # control action.
+  processModelAttributes: [String]
+
+}
+type Context_SpecifiedByTarget {
+  requirementTarget: RequirementID
+  # The Governs relationship attribute identifies the Parameter attribute that is
+  # associated in both the Requirement entity and Component entity joined by the
+  # specified by / specifies relationship.
+  governs: String
+
+}
+type Context_TransferredByTarget {
+  linkTarget: LinkID
+}
+type Context_TriggersTarget {
+  functionTarget: FunctionID
+  # Queue Type specifies how the triggering entities should queue up at the
+  # receiving processing unit.
+  queueType: Context_TriggersQueueType
+
+}
+enum Context_TriggersQueueType {
+  FIFO
+  LIFO
+  Priority
+  Reverse_Priority
+}
+#########################################
+# ControlAction definition
+#########################################
+type ControlAction {
+  identity: ControlActionID!
+  attributes: ControlActionATTR
+  parameters: [Parameter]
+  relations: ControlActionREL
+}
+type ControlActionID {
+  id: ID!
+  name: String!
+  number: String!
+}
+type ControlActionATTR {
+  # Range identifies the range of values that the entity can assume.
+  range: String
+
+  # Units identifies the units of measurement for the value of the entity.
+  units: String
+
+  # Accuracy identifies how correct the value of the entity must be.
+  accuracy: String
+
+  # Fields identifies the data fields contained within the item.
+  fields: [String]
+
+  # Precision identifies the number of significant digits required for the value of
+  # the entity.
+  precision: String
+
+  # Doc. PUID is the project unique identifier that is often used in system
+  # development specifications and documents to identify the same entity in multiple
+  # documents. This is not to be confused with the database entity unique
+  # identifier.
+  puid: String
+
+  # Size indicates the estimated size (in sizeUnits) of this entity.
+  size: String
+
+  # Size Units indicates the measurement units associated with this entity.
+  sizeUnits: String
+
+  # Priority is used to identify the order of processing of an entity. High priority
+  # entities (larger numbers) are processed before low priority entities (smaller
+  # numbers).
+  priority: String
+
+  # Type is the physical type of this entity.
+  type: ControlActionType
+
+  # Title is the label to be used in formal documentation instead of the entity
+  # name.
+  title: String
+
+  # Description is the written statement of this entity.
+  description: String
+
+}
+enum ControlActionType {
+  nil
+  Analog
+  Digital
+  Physical
+  Mixed
+}
+type ControlActionREL {
+  # Decomposed by identifies the children of this entity.
+  decomposedBy: [ControlAction_DecomposedByTarget]
+
+  # Decomposes identifies the parent of this entity.
+  decomposes: [ControlAction_DecomposesTarget]
+
+  # Documented by identifies the source document which specifies and/or enhances the
+  # definition of this entity.
+  documentedBy: [ControlAction_DocumentedByTarget]
+
+  # The Function / Link / Item enables detection of Loss Scenario.
+  enablesDetectionOf: [ControlAction_EnablesDetectionOfTarget]
+
+  # Entity may have analysis variations.
+  hasVariation: [ControlAction_HasVariationTarget]
+
+  # Input to identifies the processing unit that transforms this entity.
+  inputTo: [ControlAction_InputToTarget]
+
+  # The control action which manages (enable / disable  test) the resilient mode.
+  manages: [ControlAction_ManagesTarget]
+
+  # Output from identifies the processing unit that produces this entity.
+  outputFrom: [ControlAction_OutputFromTarget]
+
+  # Specified by identifies constraint and/or performance requirements that this
+  # entity must satisfy.
+  specifiedBy: [ControlAction_SpecifiedByTarget]
+
+  # Transferred by identifies the connection over which this entity is transported.
+  transferredBy: [ControlAction_TransferredByTarget]
+
+  # Triggers identifies the information units that enable a processing unit to begin
+  # execution.  A processing unit begins execution when it has received control
+  # enablement, all of its triggers have arrived, and its necessary resources are
+  # available.
+  triggers: [ControlAction_TriggersTarget]
+
+}
+type ControlAction_DecomposedByTarget {
+  itemTarget: ItemID
+}
+type ControlAction_DecomposesTarget {
+  itemTarget: ItemID
+}
+type ControlAction_DocumentedByTarget {
+  documentTarget: DocumentID
+}
+type ControlAction_EnablesDetectionOfTarget {
+  lossScenarioTarget: LossScenarioID
+  # constraint (=,<,>) for Item, Function, Link, Resource monitored by Sentinel
+  constraint: [String]
+
+}
+type ControlAction_HasVariationTarget {
+  unsafeActionTarget: UnsafeActionID
+}
+type ControlAction_InputToTarget {
+  functionTarget: FunctionID
+}
+type ControlAction_ManagesTarget {
+  resilientModeTarget: ResilientModeID
+  # The management action type for the resilient mode.
+  actionType: ControlAction_ManagesActionType
+
+}
+enum ControlAction_ManagesActionType {
+  nil
+  activate
+  deactivate
+  selfTest
+}
+type ControlAction_OutputFromTarget {
+  functionTarget: FunctionID
+}
+type ControlAction_SpecifiedByTarget {
+  requirementTarget: RequirementID
+  # The Governs relationship attribute identifies the Parameter attribute that is
+  # associated in both the Requirement entity and Component entity joined by the
+  # specified by / specifies relationship.
+  governs: String
+
+}
+type ControlAction_TransferredByTarget {
+  linkTarget: LinkID
+}
+type ControlAction_TriggersTarget {
+  functionTarget: FunctionID
+  # Queue Type specifies how the triggering entities should queue up at the
+  # receiving processing unit.
+  queueType: ControlAction_TriggersQueueType
+
+}
+enum ControlAction_TriggersQueueType {
+  FIFO
+  LIFO
+  Priority
+  Reverse_Priority
+}
+#########################################
+# Document definition
+#########################################
+type Document {
+  identity: DocumentID!
+  attributes: DocumentATTR
+  parameters: [Parameter]
+  relations: DocumentREL
+}
+type DocumentID {
+  id: ID!
+  name: String!
+  number: String!
+}
+type DocumentATTR {
+  # Document Date is the document's publication date.
+  documentDate: String
+
+  # Non-Govt. Category specifies the heading for non-government applicable
+  # documents. For example, SPECIFICATIONS is a heading under which this reference
+  # document will be listed.
+  nonGovernmentCategory: DocumentNonGovernmentCategory
+
+  # Contract Line Item Number is a reference to the contract's identification for
+  # the specific items and services requiring separate pricing.
+  clin: String
+
+  # External File Path contains the external file reference in either standard
+  # (c:\myDirectory\mySubDirectory\filename) or UNC (\\Server\directory\filename)
+  # format.
+  externalFilePath: String
+
+  # Document Number is the reference number assigned to the document.
+  documentNumber: String
+
+  # Title is the label to be used for the document title instead of one derived by
+  # the script when generating a document from the database.
+  title: String
+
+  # Contains a full summarization of the system's capabilities, functions, or
+  # features within this document.
+  identification: String
+
+  # Govt. Category specifies the headings/subheadings for government applicable
+  # documents. For example, SPECIFICATIONS is a heading and Military is the
+  # subheading under which this reference document will be listed.
+  governmentCategory: DocumentGovernmentCategory
+
+  # Provides a value representing the current level of cumulative document changes.
+  revisionNumber: String
+
+  # CDRL Number is the contract deliverable identifier for the document.
+  cdrlNumber: String
+
+  # Summarizes the purpose and contents of this document and also describes any
+  # security or privacy considerations associated with its use.
+  documentOverview: String
+
+  # Doc. Report designates which formal documentation report is used to generate
+  # this document.
+  documentScript: DocumentDocumentScript
+
+  # Type identifies the type of document.
+  type: DocumentType
+
+  # Contains the contextual framework or extent of this document's information
+  # content.
+  scope: String
+
+  # Description is the written statement of this entity.
+  description: String
+
+}
+enum DocumentNonGovernmentCategory {
+  nil
+  SPECIFICATIONS
+  STANDARDS
+  DRAWINGS
+  OTHER_PUBLICATIONS
+}
+enum DocumentGovernmentCategory {
+  nil
+  SPECIFICATIONS_Military
+  SPECIFICATIONS_Federal
+  SPECIFICATIONS_Other_Government_Agency
+  STANDARDS_Military
+  STANDARDS_Federal
+  STANDARDS_Other_Government_Agency
+  DRAWINGS
+  OTHER_PUBLICATIONS_Manual
+  OTHER_PUBLICATIONS_Regulation
+  OTHER_PUBLICATIONS_Handbook
+  OTHER_PUBLICATIONS_Bulletin
+  OTHER_PUBLICATIONS_Other
+}
+enum DocumentDocumentScript {
+  nil
+  IRS
+  SRS
+  Other
+  SSDD
+  SSS
+  TEP
+}
+enum DocumentType {
+  nil
+  Agreement
+  Change_Notice
+  Change_Request
+  Drawing
+  Goal
+  Guidance
+  Information_Asset
+  Interface_Control_Document
+  Interface_Requirements_Specification
+  Meeting_Minutes
+  Procurement_Specification
+  Project_Memo
+  Regulatory
+  Risk_Mitigation_Plan
+  Service_Level_Specification
+  Software_Requirements_Specification
+  Standard
+  Statement_of_Work
+  Strategy
+  System_Requirements_Document
+  System_Segment_Design_Document
+  System_Segment_Specification
+  Test__Evaluation_Master_Plan
+  Test__Evaluation_Plan
+  Test__Evaluation_Report
+  Threat
+  Trade_Study
+}
+type DocumentREL {
+  # Referenced by identifies documents for which the subject document is an
+  # applicable or reference document.
+  referencedBy: [Document_ReferencedByTarget]
+
+  # References identifies the applicable or reference document for the subject
+  # document. This relation is appropriate for documents that are generated from the
+  # contents of the database.
+  references: [Document_ReferencesTarget]
+
+  # Refined by identifies the children of this entity.
+  refinedBy: [Document_RefinedByTarget]
+
+  # Refines identifies the parent of this entity.
+  refines: [Document_RefinesTarget]
+
+  # Reports on identifies the entities that form the basis for the documentation.
+  reportsOn: [Document_ReportsOnTarget]
+
+  # Traced from identifies a higher-level document from which the requirements in
+  # the subject document should be associated.
+  tracedFrom: [Document_TracedFromTarget]
+
+  # Traces to identifies a lower-level document to which the requirements in the
+  # subject document should be associated.
+  tracesTo: [Document_TracesToTarget]
+
+}
+type Document_ReferencedByTarget {
+  documentTarget: DocumentID
+}
+type Document_ReferencesTarget {
+  documentTarget: DocumentID
+}
+type Document_RefinedByTarget {
+  documentTarget: DocumentID
+}
+type Document_RefinesTarget {
+  documentTarget: DocumentID
+}
+type Document_ReportsOnTarget {
+  interfaceTarget: InterfaceID
+}
+type Document_TracedFromTarget {
+  documentTarget: DocumentID
+}
+type Document_TracesToTarget {
+  documentTarget: DocumentID
+}
+#########################################
+# DomainSet definition
+#########################################
+type DomainSet {
+  identity: DomainSetID!
+  attributes: DomainSetATTR
+  parameters: [Parameter]
+  relations: DomainSetREL
+}
+type DomainSetID {
+  id: ID!
+  name: String!
+  number: String!
+}
+type DomainSetATTR {
+  # Count specifies the number of iterations or replications depending upon the
+  # associated construct.
+  count: String
+
+  # Description is the written statement of this entity.
+  description: String
+
+}
+type DomainSetREL {
+  # Documented by identifies the source document which specifies and/or enhances the
+  # definition of this entity.
+  documentedBy: [DomainSet_DocumentedByTarget]
+
+}
+type DomainSet_DocumentedByTarget {
+  documentTarget: DocumentID
+}
+#########################################
+# Exit definition
+#########################################
+type Exit {
+  identity: ExitID!
+  attributes: ExitATTR
+  parameters: [Parameter]
+  relations: ExitREL
+}
+type ExitID {
+  id: ID!
+  name: String!
+  number: String!
+}
+type ExitATTR {
+  # Description is the written statement of this entity.
+  description: String
+
+}
+type ExitREL {
+  # Documented by identifies the source document which specifies and/or enhances the
+  # definition of this entity.
+  documentedBy: [Exit_DocumentedByTarget]
+
+}
+type Exit_DocumentedByTarget {
+  documentTarget: DocumentID
+}
+#########################################
+# Feedback definition
+#########################################
+type Feedback {
+  identity: FeedbackID!
+  attributes: FeedbackATTR
+  parameters: [Parameter]
+  relations: FeedbackREL
+}
+type FeedbackID {
+  id: ID!
+  name: String!
+  number: String!
+}
+type FeedbackATTR {
+  # Range identifies the range of values that the entity can assume.
+  range: String
+
+  # Units identifies the units of measurement for the value of the entity.
+  units: String
+
+  # Accuracy identifies how correct the value of the entity must be.
+  accuracy: String
+
+  # Fields identifies the data fields contained within the item.
+  fields: [String]
+
+  # Precision identifies the number of significant digits required for the value of
+  # the entity.
+  precision: String
+
+  # Doc. PUID is the project unique identifier that is often used in system
+  # development specifications and documents to identify the same entity in multiple
+  # documents. This is not to be confused with the database entity unique
+  # identifier.
+  puid: String
+
+  # Size indicates the estimated size (in sizeUnits) of this entity.
+  size: String
+
+  # Size Units indicates the measurement units associated with this entity.
+  sizeUnits: String
+
+  # Priority is used to identify the order of processing of an entity. High priority
+  # entities (larger numbers) are processed before low priority entities (smaller
+  # numbers).
+  priority: String
+
+  # Type is the physical type of this entity.
+  type: FeedbackType
+
+  # Title is the label to be used in formal documentation instead of the entity
+  # name.
+  title: String
+
+  # Description is the written statement of this entity.
+  description: String
+
+}
+enum FeedbackType {
+  nil
+  Analog
+  Digital
+  Physical
+  Mixed
+}
+type FeedbackREL {
+  # Decomposed by identifies the children of this entity.
+  decomposedBy: [Feedback_DecomposedByTarget]
+
+  # Decomposes identifies the parent of this entity.
+  decomposes: [Feedback_DecomposesTarget]
+
+  # Documented by identifies the source document which specifies and/or enhances the
+  # definition of this entity.
+  documentedBy: [Feedback_DocumentedByTarget]
+
+  # The Function / Link / Item enables detection of Loss Scenario.
+  enablesDetectionOf: [Feedback_EnablesDetectionOfTarget]
+
+  # Input to identifies the processing unit that transforms this entity.
+  inputTo: [Feedback_InputToTarget]
+
+  # Output from identifies the processing unit that produces this entity.
+  outputFrom: [Feedback_OutputFromTarget]
+
+  # Specified by identifies constraint and/or performance requirements that this
+  # entity must satisfy.
+  specifiedBy: [Feedback_SpecifiedByTarget]
+
+  # Transferred by identifies the connection over which this entity is transported.
+  transferredBy: [Feedback_TransferredByTarget]
+
+  # Triggers identifies the information units that enable a processing unit to begin
+  # execution.  A processing unit begins execution when it has received control
+  # enablement, all of its triggers have arrived, and its necessary resources are
+  # available.
+  triggers: [Feedback_TriggersTarget]
+
+}
+type Feedback_DecomposedByTarget {
+  itemTarget: ItemID
+}
+type Feedback_DecomposesTarget {
+  itemTarget: ItemID
+}
+type Feedback_DocumentedByTarget {
+  documentTarget: DocumentID
+}
+type Feedback_EnablesDetectionOfTarget {
+  lossScenarioTarget: LossScenarioID
+  # constraint (=,<,>) for Item, Function, Link, Resource monitored by Sentinel
+  constraint: [String]
+
+}
+type Feedback_InputToTarget {
+  functionTarget: FunctionID
+}
+type Feedback_OutputFromTarget {
+  functionTarget: FunctionID
+}
+type Feedback_SpecifiedByTarget {
+  requirementTarget: RequirementID
+  # The Governs relationship attribute identifies the Parameter attribute that is
+  # associated in both the Requirement entity and Component entity joined by the
+  # specified by / specifies relationship.
+  governs: String
+
+}
+type Feedback_TransferredByTarget {
+  linkTarget: LinkID
+}
+type Feedback_TriggersTarget {
+  functionTarget: FunctionID
+  # Queue Type specifies how the triggering entities should queue up at the
+  # receiving processing unit.
+  queueType: Feedback_TriggersQueueType
+
+}
+enum Feedback_TriggersQueueType {
+  FIFO
+  LIFO
+  Priority
+  Reverse_Priority
+}
+#########################################
+# Function definition
+#########################################
+type Function {
+  identity: FunctionID!
+  attributes: FunctionATTR
+  parameters: [Parameter]
+  relations: FunctionREL
+}
+type FunctionID {
+  id: ID!
+  name: String!
+  number: String!
+}
+type FunctionATTR {
+  # Doc. PUID is the project unique identifier that is often used in system
+  # development specifications and documents to identify the same entity in multiple
+  # documents. This is not to be confused with the database entity unique
+  # identifier.
+  puid: String
+
+  # Duration is the time that this processing unit takes to complete.
+  duration: String
+
+  # Execute Decomposition designates whether or not the decomposition of the entity
+  # should be included when performing a dynamic analysis.
+  executeDecomposition: Boolean
+
+  # Log Message defines text to be placed in the simulation transcript upon
+  # execution of the unit.
+  logMessage: String
+
+  # Timeout is a duration. If it is set, a processing unit that has been enabled but
+  # not started for that duration should terminate.
+  timeout: String
+
+  # Title is the label to be used in formal documentation instead of the entity
+  # name.
+  title: String
+
+  # Description is the written statement of this entity.
+  description: String
+
+}
+type FunctionREL {
+  # Allocated to identifies the entity that implements this processing unit.
+  allocatedTo: [Function_AllocatedToTarget]
+
+  # Based on identifies the originating requirement, capability, or activity that
+  # this entity fulfills in whole or in part.
+  basedOn: [Function_BasedOnTarget]
+
+  # Captures identifies resources that this object requires (but does not destroy)
+  # during execution. Resources are captured when the execution of the processing
+  # unit begins and released when it completes execution.
+  captures: [Function_CapturesTarget]
+
+  # Consumes identifies resources which this object requires (and destroys) during
+  # execution. Resources are consumed when the execution of the processing unit
+  # begins.
+  consumes: [Function_ConsumesTarget]
+
+  # Decomposed by identifies the children of this entity.
+  decomposedBy: [Function_DecomposedByTarget]
+
+  # Decomposes identifies the parent of this entity.
+  decomposes: [Function_DecomposesTarget]
+
+  # Documented by identifies the source document which specifies and/or enhances the
+  # definition of this entity.
+  documentedBy: [Function_DocumentedByTarget]
+
+  # The Function / Link / Item enables detection of Loss Scenario.
+  enablesDetectionOf: [Function_EnablesDetectionOfTarget]
+
+  # Exits by identifies the set of mutually exclusive exits for this entity.
+  exitsBy: [Function_ExitsByTarget]
+
+  # Inputs identifies the entities that are transformed by this processing unit.
+  inputs: [Function_InputsTarget]
+
+  # A failed / cyber attacked "system" Function is recovered by a ReslientMode.
+  isRecoveredBy: [Function_IsRecoveredByTarget]
+
+  # The control action which manages (enable / disable  test) the resilient mode.
+  manages: [Function_ManagesTarget]
+
+  # Outputs identifies the products of the transformation carried out by this
+  # processing unit.
+  outputs: [Function_OutputsTarget]
+
+  # Produces identifies resources generated by the processing unit. Resources are
+  # produced when the execution of the processing unit completes.
+  produces: [Function_ProducesTarget]
+
+  # Thread functions are reflected in a complex function in the integrated behavior
+  # model.
+  reflectedIn: [Function_ReflectedInTarget]
+
+  # As the behavior model develops a complex function reflects one or more thread
+  # functions.
+  reflects: [Function_ReflectsTarget]
+
+  # Relates to is maintained automatically for the purpose of consistency.
+  relatesTo: [Function_RelatesToTarget]
+
+  # Services identifies the connection supported by this processing unit.
+  services: [Function_ServicesTarget]
+
+  # Specified by identifies constraint and/or performance requirements that this
+  # entity must satisfy.
+  specifiedBy: [Function_SpecifiedByTarget]
+
+  # Triggered by identifies the processing units that are enabled by this entity.  A
+  # processing unit begins execution when it has received control enablement, all of
+  # its triggers have arrived, and its necessary resources are available.
+  triggeredBy: [Function_TriggeredByTarget]
+
+}
+type Function_AllocatedToTarget {
+  componentTarget: ComponentID
+  # Behavior Type classifies the mapping of the processing unit to the
+  # implementation unit.
+  behaviorType: Function_AllocatedToBehaviorType
+
+}
+enum Function_AllocatedToBehaviorType {
+  Atomic
+  Integrated_Root
+  Thread
+}
+type Function_BasedOnTarget {
+  requirementTarget: RequirementID
+}
+type Function_CapturesTarget {
+  resourceTarget: ResourceID
+  # Acquire Available indicates whether or not the associated processing unit will
+  # acquire any available resources while waiting for the full amount required for
+  # execution.
+  acquireAvailable: Boolean
+
+  # Amount indicates how much of the resource is captured by the processing unit
+  amount: String
+
+}
+type Function_ConsumesTarget {
+  resourceTarget: ResourceID
+  # Amount indicates how much of the resource is consumed by the processing unit.
+  amount: String
+
+  # Acquire Available indicates whether or not the associated processing unit will
+  # acquire any available resources while waiting for the full amount required for
+  # execution.
+  acquireAvailable: Boolean
+
+}
+type Function_DecomposedByTarget {
+  functionTarget: FunctionID
+}
+type Function_DecomposesTarget {
+  functionTarget: FunctionID
+}
+type Function_DocumentedByTarget {
+  documentTarget: DocumentID
+}
+type Function_EnablesDetectionOfTarget {
+  lossScenarioTarget: LossScenarioID
+  # constraint (=,<,>) for Item, Function, Link, Resource monitored by Sentinel
+  constraint: [String]
+
+}
+type Function_ExitsByTarget {
+  exitTarget: ExitID
+  # Selection Probability indicates the likelihood of exiting the processing unit
+  # via this exit. Note that the selection probability need not be normalized (i.e.,
+  # the sum of probabilities for all exits does not have to be 1.0). Normalization
+  # will occur automatically upon simulation.
+  selectionProbability: Float
+
+  # Type characterizes the exit.
+  type: Function_ExitsByType
+
+}
+enum Function_ExitsByType {
+  Normal
+  Exception
+  Timeout
+}
+type Function_InputsTarget {
+  itemTarget: ItemID
+}
+type Function_IsRecoveredByTarget {
+  resilientModeTarget: ResilientModeID
+  # A collection of calculated values: "measured" (via system evaluation /
+  # simulation) resilient mode recovery time divided by "needed" resilient mode
+  # recovery time per loss scenario.  Recovery time includes: time to detect, time
+  # to isolate, time to restore (including operator decision times).    <loss
+  # scenario name>:<ratio>    A value < 1 is acceptable. A value > 1 is unacceptable
+  # (too long to recover)
+  recoveryRatio: [String]
+
+}
+type Function_ManagesTarget {
+  lossScenarioTarget: LossScenarioID
+  resilientModeTarget: ResilientModeID
+  # The management action type for the resilient mode.
+  actionType: Function_ManagesActionType
+
+}
+enum Function_ManagesActionType {
+  nil
+  activate
+  deactivate
+  selfTest
+}
+type Function_OutputsTarget {
+  itemTarget: ItemID
+}
+type Function_ProducesTarget {
+  resourceTarget: ResourceID
+  # Amount indicates how much of the resource is produced by the processing unit.
+  amount: String
+
+}
+type Function_ReflectedInTarget {
+  functionTarget: FunctionID
+}
+type Function_ReflectsTarget {
+  functionTarget: FunctionID
+}
+type Function_RelatesToTarget {
+  domainSetTarget: DomainSetID
+}
+type Function_ServicesTarget {
+  linkTarget: LinkID
+}
+type Function_SpecifiedByTarget {
+  requirementTarget: RequirementID
+  # The Governs relationship attribute identifies the Parameter attribute that is
+  # associated in both the Requirement entity and Component entity joined by the
+  # specified by / specifies relationship.
+  governs: String
+
+}
+type Function_TriggeredByTarget {
+  itemTarget: ItemID
+  # Queue Type specifies how the triggering entities should queue up at the
+  # receiving processing unit.
+  queueType: Function_TriggeredByQueueType
+
+}
+enum Function_TriggeredByQueueType {
+  FIFO
+  LIFO
+  Priority
+  Reverse_Priority
+}
+#########################################
+# Hazard definition
+#########################################
+type Hazard {
+  identity: HazardID!
+  attributes: HazardATTR
+  parameters: [Parameter]
+  relations: HazardREL
+}
+type HazardID {
+  id: ID!
+  name: String!
+  number: String!
+}
+type HazardATTR {
+  # Description is the written statement of this entity.
+  description: String
+
+}
+type HazardREL {
+  # Documented by identifies the source document which specifies and/or enhances the
+  # definition of this entity.
+  documentedBy: [Hazard_DocumentedByTarget]
+
+  # A Use Case, Hazard, Unsafe Action enables the elicitation of requirements from
+  # stakeholders.
+  elicits: [Hazard_ElicitsTarget]
+
+  # Indicates causality of entity.
+  isCausedBy: [Hazard_IsCausedByTarget]
+
+  # Indicates factors leading to entity.
+  leadsTo: [Hazard_LeadsToTarget]
+
+}
+type Hazard_DocumentedByTarget {
+  documentTarget: DocumentID
+}
+type Hazard_ElicitsTarget {
+  requirementTarget: RequirementID
+}
+type Hazard_IsCausedByTarget {
+  unsafeActionTarget: UnsafeActionID
+}
+type Hazard_LeadsToTarget {
+  lossTarget: LossID
+}
+#########################################
+# Interface definition
+#########################################
+type Interface {
+  identity: InterfaceID!
+  attributes: InterfaceATTR
+  parameters: [Parameter]
+  relations: InterfaceREL
+}
+type InterfaceID {
+  id: ID!
+  name: String!
+  number: String!
+}
+type InterfaceATTR {
+  # Title is the label to be used in formal documentation instead of the entity
+  # name.
+  title: String
+
+  # Doc. PUID is the project unique identifier that is often used in system
+  # development specifications and documents to identify the same entity in multiple
+  # documents. This is not to be confused with the database entity unique
+  # identifier.
+  puid: String
+
+  # Description is the written statement of this entity.
+  description: String
+
+}
+type InterfaceREL {
+  # Comprised of identifies the physical units which make up this entity.
+  comprisedOf: [Interface_ComprisedOfTarget]
+
+  # Documented by identifies the source document which specifies and/or enhances the
+  # definition of this entity.
+  documentedBy: [Interface_DocumentedByTarget]
+
+  # Included in identifies the parent of this entity.
+  includedIn: [Interface_IncludedInTarget]
+
+  # Includes identifies the children of this entity.
+  includes: [Interface_IncludesTarget]
+
+  # Joins identifies the physical units for which this logical unit acts as an
+  # interface.
+  joins: [Interface_JoinsTarget]
+
+  # Reported by identifies the documentation entity of which the entity is the
+  # primary subject.
+  reportedBy: [Interface_ReportedByTarget]
+
+  # Specified by identifies constraint and/or performance requirements that this
+  # entity must satisfy.
+  specifiedBy: [Interface_SpecifiedByTarget]
+
+}
+type Interface_ComprisedOfTarget {
+  linkTarget: LinkID
+}
+type Interface_DocumentedByTarget {
+  documentTarget: DocumentID
+}
+type Interface_IncludedInTarget {
+  interfaceTarget: InterfaceID
+}
+type Interface_IncludesTarget {
+  interfaceTarget: InterfaceID
+}
+type Interface_JoinsTarget {
+  componentTarget: ComponentID
+}
+type Interface_ReportedByTarget {
+  documentTarget: DocumentID
+}
+type Interface_SpecifiedByTarget {
+  requirementTarget: RequirementID
+  # The Governs relationship attribute identifies the Parameter attribute that is
+  # associated in both the Requirement entity and Component entity joined by the
+  # specified by / specifies relationship.
+  governs: String
+
+}
+#########################################
+# Item definition
+#########################################
+type Item {
+  identity: ItemID!
+  attributes: ItemATTR
+  parameters: [Parameter]
+  relations: ItemREL
+}
+type ItemID {
+  id: ID!
+  name: String!
+  number: String!
+}
+type ItemATTR {
+  # Range identifies the range of values that the entity can assume.
+  range: String
+
+  # Units identifies the units of measurement for the value of the entity.
+  units: String
+
+  # Accuracy identifies how correct the value of the entity must be.
+  accuracy: String
+
+  # Fields identifies the data fields contained within the item.
+  fields: [String]
+
+  # Precision identifies the number of significant digits required for the value of
+  # the entity.
+  precision: String
+
+  # Doc. PUID is the project unique identifier that is often used in system
+  # development specifications and documents to identify the same entity in multiple
+  # documents. This is not to be confused with the database entity unique
+  # identifier.
+  puid: String
+
+  # Size indicates the estimated size (in sizeUnits) of this entity.
+  size: String
+
+  # Size Units indicates the measurement units associated with this entity.
+  sizeUnits: String
+
+  # Priority is used to identify the order of processing of an entity. High priority
+  # entities (larger numbers) are processed before low priority entities (smaller
+  # numbers).
+  priority: String
+
+  # Type is the physical type of this entity.
+  type: ItemType
+
+  # Title is the label to be used in formal documentation instead of the entity
+  # name.
+  title: String
+
+  # Description is the written statement of this entity.
+  description: String
+
+}
+enum ItemType {
+  nil
+  Analog
+  Digital
+  Physical
+  Mixed
+}
+type ItemREL {
+  # Decomposed by identifies the children of this entity.
+  decomposedBy: [Item_DecomposedByTarget]
+
+  # Decomposes identifies the parent of this entity.
+  decomposes: [Item_DecomposesTarget]
+
+  # Documented by identifies the source document which specifies and/or enhances the
+  # definition of this entity.
+  documentedBy: [Item_DocumentedByTarget]
+
+  # The Function / Link / Item enables detection of Loss Scenario.
+  enablesDetectionOf: [Item_EnablesDetectionOfTarget]
+
+  # Input to identifies the processing unit that transforms this entity.
+  inputTo: [Item_InputToTarget]
+
+  # Output from identifies the processing unit that produces this entity.
+  outputFrom: [Item_OutputFromTarget]
+
+  # Specified by identifies constraint and/or performance requirements that this
+  # entity must satisfy.
+  specifiedBy: [Item_SpecifiedByTarget]
+
+  # Transferred by identifies the connection over which this entity is transported.
+  transferredBy: [Item_TransferredByTarget]
+
+  # Triggers identifies the information units that enable a processing unit to begin
+  # execution.  A processing unit begins execution when it has received control
+  # enablement, all of its triggers have arrived, and its necessary resources are
+  # available.
+  triggers: [Item_TriggersTarget]
+
+}
+type Item_DecomposedByTarget {
+  itemTarget: ItemID
+}
+type Item_DecomposesTarget {
+  itemTarget: ItemID
+}
+type Item_DocumentedByTarget {
+  documentTarget: DocumentID
+}
+type Item_EnablesDetectionOfTarget {
+  lossScenarioTarget: LossScenarioID
+  # constraint (=,<,>) for Item, Function, Link, Resource monitored by Sentinel
+  constraint: [String]
+
+}
+type Item_InputToTarget {
+  functionTarget: FunctionID
+}
+type Item_OutputFromTarget {
+  functionTarget: FunctionID
+}
+type Item_SpecifiedByTarget {
+  requirementTarget: RequirementID
+  # The Governs relationship attribute identifies the Parameter attribute that is
+  # associated in both the Requirement entity and Component entity joined by the
+  # specified by / specifies relationship.
+  governs: String
+
+}
+type Item_TransferredByTarget {
+  linkTarget: LinkID
+}
+type Item_TriggersTarget {
+  functionTarget: FunctionID
+  # Queue Type specifies how the triggering entities should queue up at the
+  # receiving processing unit.
+  queueType: Item_TriggersQueueType
+
+}
+enum Item_TriggersQueueType {
+  FIFO
+  LIFO
+  Priority
+  Reverse_Priority
+}
+#########################################
+# Link definition
+#########################################
+type Link {
+  identity: LinkID!
+  attributes: LinkATTR
+  parameters: [Parameter]
+  relations: LinkREL
+}
+type LinkID {
+  id: ID!
+  name: String!
+  number: String!
+}
+type LinkATTR {
+  # A justification for excluding the Link from the Attack Analysis.
+  outOfScopeJustification: String
+
+  # Protocol identifies the communication protocol for this entity.
+  protocol: String
+
+  # Is the Link out of scope for the system Attack Analysis?
+  outOfScopeAttackAnalysis: Boolean
+
+  # Delay represents the time delay that occurs when an information unit traverses
+  # this connecting unit. It is intended to model the actual propagation delay and
+  # processing delay, not the delay due to resource utilization.
+  delay: String
+
+  # Capacity indicates the flow capacity (in capacityUnits) of this connecting
+  # entity.
+  capacity: String
+
+  # Title is the label to be used in formal documentation instead of the entity
+  # name.
+  title: String
+
+  # Doc. PUID is the project unique identifier that is often used in system
+  # development specifications and documents to identify the same entity in multiple
+  # documents. This is not to be confused with the database entity unique
+  # identifier.
+  puid: String
+
+  # Delay Units identifies the units for the delay for this connecting unit.
+  delayUnits: String
+
+  # Capacity Units indicates the measurement units associated with this connecting
+  # entity.
+  capacityUnits: String
+
+  # Description is the written statement of this entity.
+  description: String
+
+}
+type LinkREL {
+  # Comprises identifies the logical interface which is in part implemented
+  # (physically) by this entity.
+  comprises: [Link_ComprisesTarget]
+
+  # Connects to identifies the connection that serves to link this entity to another
+  # entity.
+  connectsTo: [Link_ConnectsToTarget]
+
+  # Documented by identifies the source document which specifies and/or enhances the
+  # definition of this entity.
+  documentedBy: [Link_DocumentedByTarget]
+
+  # The Function / Link / Item enables detection of Loss Scenario.
+  enablesDetectionOf: [Link_EnablesDetectionOfTarget]
+
+  # Included in identifies the parent of this entity.
+  includedIn: [Link_IncludedInTarget]
+
+  # Includes identifies the children of this entity.
+  includes: [Link_IncludesTarget]
+
+  # Identifies Attack Patterns that may violate an Entity.
+  isViolatedBy: [Link_IsViolatedByTarget]
+
+  # Serviced by identifies the processing unit that performs the interface function.
+  servicedBy: [Link_ServicedByTarget]
+
+  # Specified by identifies constraint and/or performance requirements that this
+  # entity must satisfy.
+  specifiedBy: [Link_SpecifiedByTarget]
+
+  # Transfers identifies the information that this connecting unit passes between
+  # implementation units.
+  transfers: [Link_TransfersTarget]
+
+}
+type Link_ComprisesTarget {
+  interfaceTarget: InterfaceID
+}
+type Link_ConnectsToTarget {
+  componentTarget: ComponentID
+  # Port ID provides a unique identification for the port that is used between the
+  # Link and the Component.
+  portID: String
+
+}
+type Link_DocumentedByTarget {
+  documentTarget: DocumentID
+}
+type Link_EnablesDetectionOfTarget {
+  lossScenarioTarget: LossScenarioID
+  # constraint (=,<,>) for Item, Function, Link, Resource monitored by Sentinel
+  constraint: [String]
+
+}
+type Link_IncludedInTarget {
+  linkTarget: LinkID
+}
+type Link_IncludesTarget {
+  linkTarget: LinkID
+}
+type Link_IsViolatedByTarget {
+  attackVectorTarget: AttackVectorID
+  # A description of selected mitigation.
+  justification: String
+
+  # Component / Link specific attack vector description.
+  description: String
+
+  # The attack vector system mitigation for the associated Component / Link.
+  mitigationType: Link_IsViolatedByMitigationType
+
+}
+enum Link_IsViolatedByMitigationType {
+  nil
+  Defensive
+  DiverseRedundancy
+  Harden
+  N_A
+}
+type Link_ServicedByTarget {
+  functionTarget: FunctionID
+}
+type Link_SpecifiedByTarget {
+  requirementTarget: RequirementID
+  # The Governs relationship attribute identifies the Parameter attribute that is
+  # associated in both the Requirement entity and Component entity joined by the
+  # specified by / specifies relationship.
+  governs: String
+
+}
+type Link_TransfersTarget {
+  itemTarget: ItemID
+}
+#########################################
+# Loss definition
+#########################################
+type Loss {
+  identity: LossID!
+  attributes: LossATTR
+  parameters: [Parameter]
+  relations: LossREL
+}
+type LossID {
+  id: ID!
+  name: String!
+  number: String!
+}
+type LossATTR {
+  # Likert Scale:  1. Unacceptable loss and highest priority to provide resiliency. 
+  # 2. Avoid loss as long as resiliency solution does not over-complicate operation.
+  #  3. Would like to avoid loss, but solution needs to be incremental.  4. Lowest
+  # priority, low-cost, simplistic solutions should be considered.
+  priority: LossPriority
+
+  # Description is the written statement of this entity.
+  description: String
+
+}
+enum LossPriority {
+  E_1
+  E_2
+  E_3
+  E_4
+}
+type LossREL {
+  # Documented by identifies the source document which specifies and/or enhances the
+  # definition of this entity.
+  documentedBy: [Loss_DocumentedByTarget]
+
+  # Indicates causality of entity.
+  isCausedBy: [Loss_IsCausedByTarget]
+
+}
+type Loss_DocumentedByTarget {
+  documentTarget: DocumentID
+}
+type Loss_IsCausedByTarget {
+  hazardTarget: HazardID
+}
+#########################################
+# LossScenario definition
+#########################################
+type LossScenario {
+  identity: LossScenarioID!
+  attributes: LossScenarioATTR
+  parameters: [Parameter]
+  relations: LossScenarioREL
+}
+type LossScenarioID {
+  id: ID!
+  name: String!
+  number: String!
+}
+type LossScenarioATTR {
+  # Time budget to detect loss scenario.
+  detectTime: Float
+
+  # Time budget to isolate the loss scenario.
+  isolateTime: Float
+
+  # The Sentinel design pattern associated with the Loss Scenario.
+  detect_pattern: LossScenarioDetect_pattern
+
+  # Description is the written statement of this entity.
+  description: String
+
+}
+enum LossScenarioDetect_pattern {
+  Changing_Control_Input
+  Data_Consistency
+  Introspection
+  Other
+}
+type LossScenarioREL {
+  # The Loss Scenario is detected by monitoring:  Item – Control Action / Feedback /
+  # Context​  "Field" value tampered​  size tampered​  order modified  Function 
+  # Input / Trigger – injected / spoofed​  Output – incorrect value  Exit (Error
+  # logic)​  Resource (too much / too little)​  Attribute: Duration (too long / too
+  # short)  Attribute: Timeout (too long / too short)  Link  Attribute: Capacity
+  # (too much / too little)​  Attribute: Delay (too long / too short)
+  detectedByMonitoring: [LossScenario_DetectedByMonitoringTarget]
+
+  # Documented by identifies the source document which specifies and/or enhances the
+  # definition of this entity.
+  documentedBy: [LossScenario_DocumentedByTarget]
+
+  # The loss scenario is caused by an attack vector.
+  isPrecipitatedBy: [LossScenario_IsPrecipitatedByTarget]
+
+  # A Loss Scenario is protected by a Sentinel.
+  isProtectedBy: [LossScenario_IsProtectedByTarget]
+
+  # The resilient mode which remediates loss scenarios.
+  isRemediatedBy: [LossScenario_IsRemediatedByTarget]
+
+  # A Loss Scenario is simulated by a Threat Simulator.
+  isSimulatedBy: [LossScenario_IsSimulatedByTarget]
+
+  # Indicates factors leading to entity.
+  leadsTo: [LossScenario_LeadsToTarget]
+
+  # The resilient mode is managed (enabled / disabled / tested) by control action.
+  managedBy: [LossScenario_ManagedByTarget]
+
+}
+type LossScenario_DetectedByMonitoringTarget {
+  itemTarget: ItemID
+  resourceTarget: ResourceID
+  componentTarget: ComponentID
+  functionTarget: FunctionID
+  linkTarget: LinkID
+  # constraint (=,<,>) for Item, Function, Link, Resource monitored by Sentinel
+  constraint: [String]
+
+}
+type LossScenario_DocumentedByTarget {
+  documentTarget: DocumentID
+}
+type LossScenario_IsPrecipitatedByTarget {
+  attackVectorTarget: AttackVectorID
+}
+type LossScenario_IsProtectedByTarget {
+  componentTarget: ComponentID
+}
+type LossScenario_IsRemediatedByTarget {
+  resilientModeTarget: ResilientModeID
+}
+type LossScenario_IsSimulatedByTarget {
+  componentTarget: ComponentID
+}
+type LossScenario_LeadsToTarget {
+  unsafeActionTarget: UnsafeActionID
+}
+type LossScenario_ManagedByTarget {
+  functionTarget: FunctionID
+  # The management action type for the resilient mode.
+  actionType: LossScenario_ManagedByActionType
+
+}
+enum LossScenario_ManagedByActionType {
+  nil
+  activate
+  deactivate
+  selfTest
+}
+#########################################
+# Requirement definition
+#########################################
+type Requirement {
+  identity: RequirementID!
+  attributes: RequirementATTR
+  parameters: [Parameter]
+  relations: RequirementREL
+}
+type RequirementID {
+  id: ID!
+  name: String!
+  number: String!
+}
+type RequirementATTR {
+  # Weight Factor indicates the relative importance of a particular originating
+  # requirement.
+  weightFactor: Float
+
+  # Title is the label to be used in formal documentation instead of the element
+  # name.
+  title: String
+
+  # Type is the nature of the requirement. A requirement of type Capability ought to
+  # be the only the basis of an OperationalActivity.
+  type: RequirementType
+
+  # Rationale documents the reason for the requirement.
+  rationale: String
+
+  # Incentive Performance Parameter identifies whether or not this is a requirement
+  # affecting contract award fee.
+  incentivePerformanceParameter: Boolean
+
+  # Key Performance Parameter identifies whether or not this is a key performance
+  # parameter.
+  keyPerformanceParameter: Boolean
+
+  # Value of the constraint or performance measure.
+  value: String
+
+  # Paragraph Number is the number of the source paragraph from which this
+  # originating requirement was extracted.
+  paragraphNumber: String
+
+  # Paragraph Title is the title of the source paragraph from which this originating
+  # requirement was extracted.
+  paragraphTitle: String
+
+  # Doc. PUID is the project unique identifier that is often used in system
+  # development specifications and documents to identify the same entity in multiple
+  # documents. This is not to be confused with the database entity unique
+  # identifier.
+  puid: String
+
+  # Origin differentiates between originating requirements, derived requirements,
+  # and design decisions.
+  origin: RequirementOrigin
+
+  # A Key Performance Parameter (KPP) is a system metric that is considered critical
+  # or essential to the development of an effective capability. KPPs are generally
+  # controlled by the customer or stakeholder. Failure to meet the KPP can be cause
+  # for a concept or system to be reevaluated as not meeting stakeholder minimum
+  # requirements.    A Key System Attribute (KSA) is an attribute or characteristic
+  # considered most critical or essential in meeting a specific capability but is
+  # not selected as a KPP. KSAs provide an additional level of prioritization below
+  # KPP but with lower level control than the stakeholder level.    A Measure of
+  # Operational Effectiveness (MOE) is an operational measure of success for an
+  # architecture or system which is closely related to the achievement of the
+  # mission or operational objective being evaluated in the intended operational
+  # environment under a specified set of conditions. MOEs address the question of
+  # how well the solution achieves the intended purpose.    A Measure of Performance
+  # Effectiveness (MOP) is a measure that characterizes physical or functional
+  # attributes related to a specific solution or system operation, as measured under
+  # specified testing and/or operational conditions.
+  performanceParameterType: RequirementPerformanceParameterType
+
+  # Units of the constraining condition or performance measure.
+  units: String
+
+  # Description is the written statement of this entity.
+  description: String
+
+}
+enum RequirementType {
+  nil
+  Composite
+  Constraint
+  Functional
+  Incentive_Award_Fee_Criterion
+  Performance
+  Programmatic
+  Test
+  Verification
+}
+enum RequirementOrigin {
+  nil
+  Derived
+  Design_Decision
+  Originating
+}
+enum RequirementPerformanceParameterType {
+  nil
+  KPP
+  KSA
+  MOE
+  MOP
+}
+type RequirementREL {
+  # Basis of identifies the entities needed to fulfill one or more originating
+  # requirements or operational activities.
+  basisOf: [Requirement_BasisOfTarget]
+
+  # Documented by identifies the source document which specifies and/or enhances the
+  # definition of this entity.
+  documentedBy: [Requirement_DocumentedByTarget]
+
+  # A requirement may be elicited by a Use Case, Hazard, Unsafe Action.
+  elicitedBy: [Requirement_ElicitedByTarget]
+
+  # Refined by identifies the children of this entity.
+  refinedBy: [Requirement_RefinedByTarget]
+
+  # Refines identifies the parent of this entity.
+  refines: [Requirement_RefinesTarget]
+
+  # Specifies identifies those entities whose performance or whose characteristics
+  # are bounded by the requirement.
+  specifies: [Requirement_SpecifiesTarget]
+
+}
+type Requirement_BasisOfTarget {
+  functionTarget: FunctionID
+}
+type Requirement_DocumentedByTarget {
+  documentTarget: DocumentID
+}
+type Requirement_ElicitedByTarget {
+  hazardTarget: HazardID
+  unsafeActionTarget: UnsafeActionID
+}
+type Requirement_RefinedByTarget {
+  requirementTarget: RequirementID
+}
+type Requirement_RefinesTarget {
+  requirementTarget: RequirementID
+}
+type Requirement_SpecifiesTarget {
+  itemTarget: ItemID
+  functionTarget: FunctionID
+  interfaceTarget: InterfaceID
+  # The Governs relationship attribute identifies the Parameter attribute that is
+  # associated in both the Requirement entity and Component entity joined by the
+  # specified by / specifies relationship.
+  governs: String
+
+}
+#########################################
+# ResilientMode definition
+#########################################
+type ResilientMode {
+  identity: ResilientModeID!
+  attributes: ResilientModeATTR
+  parameters: [Parameter]
+  relations: ResilientModeREL
+}
+type ResilientModeID {
+  id: ID!
+  name: String!
+  number: String!
+}
+type ResilientModeATTR {
+  # STRAT: "Effectiveness" of resilient mode calculated by impact on remediating
+  # high "likelihood", attacks (Loss Scenario) associated with high "mission impact"
+  # Losses.
+  effectiveness: ResilientModeEffectiveness
+
+  # Degree of model "contained by" associations.​
+  complexity: ResilientModeComplexity
+
+  # Degree of operator training need.  Degree of mission interruption.
+  operationalImpact: ResilientModeOperationalImpact
+
+  # Time budget to restore system function via resilient mode.​
+  restoreTime: Float
+
+  # Time budget for operator decision time to enable resilient mode. 0 implies
+  # automated resilient mode.​
+  operatorDecisionTime: Float
+
+  # Title is the label to be used in formal documentation instead of the entity
+  # name.
+  title: String
+
+  # Doc. PUID is the project unique identifier that is often used in system
+  # development specifications and documents to identify the same entity in multiple
+  # documents. This is not to be confused with the database entity unique
+  # identifier.
+  puid: String
+
+  # Description is the written statement of this entity.
+  description: String
+
+}
+enum ResilientModeEffectiveness {
+  nil
+  High
+  Medium
+  Low
+}
+enum ResilientModeComplexity {
+  nil
+  High
+  Med
+  Low
+}
+enum ResilientModeOperationalImpact {
+  nil
+  High
+  Med
+  Low
+}
+type ResilientModeREL {
+  # Documented by identifies the source document which specifies and/or enhances the
+  # definition of this entity.
+  documentedBy: [ResilientMode_DocumentedByTarget]
+
+  # The resilient mode is managed (enabled / disabled / tested) by control action.
+  managedBy: [ResilientMode_ManagedByTarget]
+
+  # A ResilentMode recovers a failed / cyber attacked "system" Function.
+  recovers: [ResilientMode_RecoversTarget]
+
+  # The loss scenarios remediated by the resilient mode.
+  remediates: [ResilientMode_RemediatesTarget]
+
+  # Specified by identifies constraint and/or performance requirements that this
+  # entity must satisfy.
+  specifiedBy: [ResilientMode_SpecifiedByTarget]
+
+}
+type ResilientMode_DocumentedByTarget {
+  documentTarget: DocumentID
+}
+type ResilientMode_ManagedByTarget {
+  controlActionTarget: ControlActionID
+  functionTarget: FunctionID
+  # The management action type for the resilient mode.
+  actionType: ResilientMode_ManagedByActionType
+
+}
+enum ResilientMode_ManagedByActionType {
+  nil
+  activate
+  deactivate
+  selfTest
+}
+type ResilientMode_RecoversTarget {
+  functionTarget: FunctionID
+  # A collection of calculated values: "measured" (via system evaluation /
+  # simulation) resilient mode recovery time divided by "needed" resilient mode
+  # recovery time per loss scenario.  Recovery time includes: time to detect, time
+  # to isolate, time to restore (including operator decision times).    <loss
+  # scenario name>:<ratio>    A value < 1 is acceptable. A value > 1 is unacceptable
+  # (too long to recover)
+  recoveryRatio: [String]
+
+}
+type ResilientMode_RemediatesTarget {
+  lossScenarioTarget: LossScenarioID
+}
+type ResilientMode_SpecifiedByTarget {
+  requirementTarget: RequirementID
+  # The Governs relationship attribute identifies the Parameter attribute that is
+  # associated in both the Requirement entity and Component entity joined by the
+  # specified by / specifies relationship.
+  governs: String
+
+}
+#########################################
+# Resource definition
+#########################################
+type Resource {
+  identity: ResourceID!
+  attributes: ResourceATTR
+  parameters: [Parameter]
+  relations: ResourceREL
+}
+type ResourceID {
+  id: ID!
+  name: String!
+  number: String!
+}
+type ResourceATTR {
+  # Maximum Amount is the largest amount of the resource that can be present in the
+  # system at any time. This value is used in dynamically analyzing the behavior of
+  # the system.
+  maximumAmount: String
+
+  # Amount Type indicates whether this resource exists in integer or float amounts.
+  amountType: ResourceAmountType
+
+  # Units indicates the units of measure for the resource.
+  units: String
+
+  # Initial Amount is the amount of the resource present in the system when the
+  # system starts. This value is used in dynamically analyzing the behavior of the
+  # system.
+  initialAmount: String
+
+  # Description is the written statement of this entity.
+  description: String
+
+}
+enum ResourceAmountType {
+  Float
+  Integer
+}
+type ResourceREL {
+  # Documented by identifies the source document which specifies and/or enhances the
+  # definition of this entity.
+  documentedBy: [Resource_DocumentedByTarget]
+
+  # The Function / Link / Item enables detection of Loss Scenario.
+  enablesDetectionOf: [Resource_EnablesDetectionOfTarget]
+
+}
+type Resource_DocumentedByTarget {
+  documentTarget: DocumentID
+}
+type Resource_EnablesDetectionOfTarget {
+  lossScenarioTarget: LossScenarioID
+  # constraint (=,<,>) for Item, Function, Link, Resource monitored by Sentinel
+  constraint: [String]
+
+}
+#########################################
+# UnsafeAction definition
+#########################################
+type UnsafeAction {
+  identity: UnsafeActionID!
+  attributes: UnsafeActionATTR
+  parameters: [Parameter]
+  relations: UnsafeActionREL
+}
+type UnsafeActionID {
+  id: ID!
+  name: String!
+  number: String!
+}
+type UnsafeActionATTR {
+  # There are four ways a control action can be unsafe:  1. Not providing the
+  # control action leads to a hazard.  2. Providing the control action leads to a
+  # hazard.  3. Providing a potentially safe control action but too early, too late,
+  # or in the wrong order  4. The control action lasts too long or is stopped too
+  # soon (for continuous control actions, not discrete ones).
+  variationType: UnsafeActionVariationType
+
+  # Description is the written statement of this entity.
+  description: String
+
+}
+enum UnsafeActionVariationType {
+  NotProviding
+  Providing
+  TooEarlyTooLate
+  TooLongTooSoon
+}
+type UnsafeActionREL {
+  # Documented by identifies the source document which specifies and/or enhances the
+  # definition of this entity.
+  documentedBy: [UnsafeAction_DocumentedByTarget]
+
+  # A Use Case, Hazard, Unsafe Action enables the elicitation of requirements from
+  # stakeholders.
+  elicits: [UnsafeAction_ElicitsTarget]
+
+  # Unsafe control action context (process model).
+  hasProcessModel: [UnsafeAction_HasProcessModelTarget]
+
+  # Indicates causality of entity.
+  isCausedBy: [UnsafeAction_IsCausedByTarget]
+
+  # Indicates factors leading to entity.
+  leadsTo: [UnsafeAction_LeadsToTarget]
+
+  # Entity is an analysis variation.
+  variationOf: [UnsafeAction_VariationOfTarget]
+
+}
+type UnsafeAction_DocumentedByTarget {
+  documentTarget: DocumentID
+}
+type UnsafeAction_ElicitsTarget {
+  requirementTarget: RequirementID
+}
+type UnsafeAction_HasProcessModelTarget {
+  contextTarget: ContextID
+  # The process model attributes and values that define the "context" for the unsafe
+  # control action.
+  processModelAttributes: [String]
+
+}
+type UnsafeAction_IsCausedByTarget {
+  lossScenarioTarget: LossScenarioID
+}
+type UnsafeAction_LeadsToTarget {
+  hazardTarget: HazardID
+}
+type UnsafeAction_VariationOfTarget {
+  controlActionTarget: ControlActionID
+}
+type CallStructure {
+  function: FunctionID
+  structure: StructureItem
+}
+type StructureItem {
+  id: ID!
+  type: StructureType
+  # optional annotation for a Branch
+  annotation: String
+  # reference UUID / Name / Num for: Function, Exit / ExitCondition (Exit), Replicate (DomainSet) types
+  referenceID: String
+  referenceName: String
+  referenceNum: String
+  structure: [StructureItem]
+}
+enum StructureType
+{
+  Branch
+  Function
+  Exit
+  ExitCondition
+  Loop
+  LoopExit
+  Parallel
+  Replicate
+  Select
+}
