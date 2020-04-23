@@ -13,5 +13,6 @@ Georgios Bakirtzis, Tim Sherburne, Stephen Adams, Barry M. Horowitz, Peter Belin
 ## GraphQL schema
 
 The [GraphQL schema](./cps-metamodel.graphql) is an algorithmic implementation
-of the CPS metamodel. Our intention for creating a GraphQL representation is to decouple the metamodel from a particular tool or language. This means that you can use our schema provided you create an interface with GraphQL in your modeling tool of choice. This should be relatively straightforward for most tools. GraphQL also has a built-in querying language, which could be useful for interogating your models for particular pieces of information.
+of the CPS metamodel. Our intention for creating a GraphQL representation is to decouple the metamodel from a particular tool or language. This means that you can use our schema provided you create an interface with GraphQL in your modeling tool of choice. This should be relatively straightforward for most tools. GraphQL also has a built-in querying language, which could be useful for interogating your models for particular pieces of information. Sample queries and mutations can be found 
+[here](https://gist.github.com/tsherburne/3d3fd799771016ff0535388e1145b56e).
 
