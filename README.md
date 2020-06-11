@@ -8,7 +8,7 @@
 
 ## About the paper
 
-Georgios Bakirtzis, Tim Sherburne, Stephen Adams, Barry M. Horowitz, Peter Beling, and Cody H. Fleming, "An ontological metamodel for cyber-physical system safety, security, and resilience coengineering" [preprint]
+Georgios Bakirtzis, Tim Sherburne, Stephen Adams, Barry M. Horowitz, Peter Beling, and Cody H. Fleming, "An ontological metamodel for cyber-physical system safety, security, and resilience coengineering" [preprint](https://arxiv.org/abs/2006.05304)
 
 ## GraphQL schema
 
